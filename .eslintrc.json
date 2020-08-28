@@ -20,13 +20,15 @@
     ],
     "rules": {
 	   	"import/extensions": [
-        "error",
-	      {
-	        "extensions": [".ts"]
-	      }
-      ],
+	   	  "error",
+	   	  "ignorePackages",
+	   	  {
+	   	    "ts": "never"
+	   	  }
+	   	],
       "import/no-unresolved": "off",
-      "prettier/prettier": "error"
+      "prettier/prettier": "error",
+      "no-console": "off"
 	  },
 	  "settings": {
 	    "import/resolver": {
