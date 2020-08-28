@@ -1,0 +1,8 @@
+{
+  "name": "video-server-challenge",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/pedrovsiqueira/video-server-challenge.git",
+  "author": "pedrovsiqueira <pedro.v.siqueira@gmail.com>",
+  "license": "MIT"
+}
