@@ -110,16 +110,16 @@ export default class UserController {
       return response.status(200).json(users);
     } catch (error) {
       return response.status(500).json({
-        message: 'Requisition failed, please try again',
+        message: 'Request failed, please try again',
       });
     }
   }
 
   public async show(request: Request, response: Response): Promise<Response> {
-    const { id } = request.params;
+    const { username } = request.params;
 
     try {
-      const user = await User.findById(id).select('-password');
+      const user = await User.findOne({ username }).select('-password');
 
       if (!user) {
         return response.status(400).json({
@@ -130,7 +130,7 @@ export default class UserController {
       return response.status(200).json(user);
     } catch (error) {
       return response.status(500).json({
-        message: 'Requisition failed, please try again',
+        message: 'Request failed, please try again',
       });
     }
   }
@@ -178,7 +178,37 @@ export default class UserController {
     }
 
     try {
+      const userToBeUpdated = await User.findById(id);
+
+      if (!userToBeUpdated) {
+        return response.status(400).json({
+          message: 'No user found',
+        });
+      }
+
+      const isMatch = await bcrypt.compare(password, userToBeUpdated.password);
+
+      if (isMatch) {
+        return response
+          .status(400)
+          .json({ message: 'Password already in use' });
+      }
+
       const user = await User.findByIdAndUpdate(id, updateUser, { new: true });
+
+      return response.status(200).json(user);
+    } catch (error) {
+      return response
+        .status(500)
+        .json({ message: 'Request failed, please try again' });
+    }
+  }
+
+  public async delete(request: Request, response: Response): Promise<Response> {
+    const { id } = request.params;
+
+    try {
+      const user = await User.findByIdAndDelete(id);
 
       if (!user) {
         return response.status(400).json({
@@ -186,11 +216,13 @@ export default class UserController {
         });
       }
 
-      return response.status(200).json(user);
-    } catch (error) {
       return response
-        .status(500)
-        .json({ message: 'Requisition failed, please try again' });
+        .status(200)
+        .json({ message: 'User removed successfully' });
+    } catch (error) {
+      return response.status(500).json({
+        message: 'Request failed, please try again',
+      });
     }
   }
 }
