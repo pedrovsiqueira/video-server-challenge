@@ -1,9 +1,14 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
-import requiredFields from '../utils/requiredFields';
+import { credentialsFields } from '../utils/requiredFields';
 import User from '../models/User';
 import { genToken } from '../utils/tokenGenerator';
+
+interface IUpdatedUser {
+  password?: string;
+  mobileToken?: string;
+}
 
 export default class UserController {
   public async create(request: Request, response: Response): Promise<Response> {
@@ -11,7 +16,7 @@ export default class UserController {
 
     const mobileToken = crypto.randomBytes(64).toString('hex');
 
-    for (const field of requiredFields) {
+    for (const field of credentialsFields) {
       if (!request.body[field]) {
         return response.status(400).json({
           message: `Missing ${field} field`,
@@ -49,7 +54,8 @@ export default class UserController {
         mobileToken,
       };
 
-      const responseFromDb = await new User(newUser).save();
+      const responseFromDb = await User.create(newUser);
+
       return response
         .status(201)
         .json({ accessToken: genToken(responseFromDb) });
@@ -62,10 +68,10 @@ export default class UserController {
   public async login(request: Request, response: Response): Promise<Response> {
     const { username, password } = request.body;
 
-    for (const field of requiredFields) {
+    for (const field of credentialsFields) {
       if (!request.body[field]) {
         return response.status(400).json({
-          message: 'Dados incompletos',
+          message: `Missing ${field} field`,
         });
       }
     }
@@ -87,9 +93,104 @@ export default class UserController {
         token: genToken(user),
       });
     } catch (error) {
+      return response.status(500).json({ message: 'Failed to login' });
+    }
+  }
+
+  public async index(request: Request, response: Response): Promise<Response> {
+    try {
+      const users = await User.find({}).select('-password');
+
+      if (users.length === 0) {
+        return response.status(400).json({
+          message: 'No users found',
+        });
+      }
+
+      return response.status(200).json(users);
+    } catch (error) {
+      return response.status(500).json({
+        message: 'Requisition failed, please try again',
+      });
+    }
+  }
+
+  public async show(request: Request, response: Response): Promise<Response> {
+    const { id } = request.params;
+
+    try {
+      const user = await User.findById(id).select('-password');
+
+      if (!user) {
+        return response.status(400).json({
+          message: 'No user found',
+        });
+      }
+
+      return response.status(200).json(user);
+    } catch (error) {
+      return response.status(500).json({
+        message: 'Requisition failed, please try again',
+      });
+    }
+  }
+
+  public async update(request: Request, response: Response): Promise<Response> {
+    const { id } = request.params;
+
+    const { password, mobileToken } = request.body;
+
+    const updateUser = {} as IUpdatedUser;
+
+    if (!password && !mobileToken) {
+      return response
+        .status(200)
+        .json({ message: 'Missing inputs, please try again' });
+    }
+
+    if (password) {
+      if (password.length <= 5) {
+        return response
+          .status(200)
+          .json({ message: 'Password must be at least 6 digits' });
+      }
+
+      try {
+        const salt = await bcrypt.genSalt(10);
+        const hash = await bcrypt.hash(password, salt);
+
+        updateUser.password = hash;
+      } catch (error) {
+        return response.status(500).json({
+          message: 'Failed to encrypt password, please try again',
+        });
+      }
+    }
+
+    if (mobileToken) {
+      if (mobileToken.length <= 5) {
+        return response
+          .status(200)
+          .json({ message: 'Mobile Token must be at least 6 digits' });
+      }
+
+      updateUser.mobileToken = mobileToken;
+    }
+
+    try {
+      const user = await User.findByIdAndUpdate(id, updateUser, { new: true });
+
+      if (!user) {
+        return response.status(400).json({
+          message: 'No user found',
+        });
+      }
+
+      return response.status(200).json(user);
+    } catch (error) {
       return response
         .status(500)
-        .json({ message: 'Erro ao tentar realizar o login' });
+        .json({ message: 'Requisition failed, please try again' });
     }
   }
 }
