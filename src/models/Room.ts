@@ -3,10 +3,10 @@ import { v4 as uuidv4 } from 'uuid';
 
 export interface IRoom extends Document {
   name: string;
-  guid: string;
+  guid?: string;
   hostUser: string;
-  participants: string[];
-  capacity: number;
+  participants?: string[];
+  capacity?: number;
 }
 
 const RoomSchema = new Schema({
@@ -34,9 +34,10 @@ const RoomSchema = new Schema({
   capacity: {
     type: Number,
     required: true,
+    default: 5,
   },
 });
 
-const User = model<IRoom>('User', RoomSchema);
+const Room = model<IRoom>('Room', RoomSchema);
 
-export default User;
+export default Room;
