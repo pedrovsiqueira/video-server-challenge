@@ -2,6 +2,10 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../configs/env';
 
+interface ITokenPayload {
+  id: string;
+}
+
 const authenticate = (
   request: Request,
   response: Response,
@@ -24,7 +28,10 @@ const authenticate = (
   }
 
   try {
-    jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_SECRET) as ITokenPayload;
+    const { id } = decoded;
+
+    request.user = { id };
     return next();
   } catch {
     return response
