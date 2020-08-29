@@ -136,7 +136,7 @@ export default class UserController {
   }
 
   public async update(request: Request, response: Response): Promise<Response> {
-    const { id } = request.params;
+    const { id } = request.user;
 
     const { password, mobileToken } = request.body;
 
@@ -205,7 +205,7 @@ export default class UserController {
   }
 
   public async delete(request: Request, response: Response): Promise<Response> {
-    const { id } = request.params;
+    const { id } = request.user;
 
     try {
       const user = await User.findByIdAndDelete(id);
