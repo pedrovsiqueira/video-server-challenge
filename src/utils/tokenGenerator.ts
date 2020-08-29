@@ -4,5 +4,5 @@ import { JWT_SECRET } from '../configs/env';
 
 export const genToken = (user: IUser): string => {
   const { _id } = user;
-  return jwt.sign({ _id }, JWT_SECRET);
+  return jwt.sign({ id: _id }, JWT_SECRET);
 };
