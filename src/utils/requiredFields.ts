@@ -1,2 +1,2 @@
 export const credentialsFields = ['username', 'password'];
-export const fieldsRequiredToUpdate = ['password', 'mobileToken'];
+export const fieldsRequiredToCreateRoom = ['name', 'capacity'];
