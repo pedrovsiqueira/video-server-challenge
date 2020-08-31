@@ -12,6 +12,13 @@ The challenge was to design a server that handles HTTP requests for user managem
 - [Passport](http://www.passportjs.org/) - Passport - Passport is authentication middleware for Node.js. Extremely flexible and modular, Passport can be unobtrusively dropped in to any Express-based web application. A comprehensive set of strategies support authentication using a username and password, Facebook, Twitter, and more.
 
 
+<!-- USAGE -->
+
+## USAGE
+
+https://documenter.getpostman.com/view/11826298/TVCcWoYY
+
+
 <!-- GETTING STARTED -->
 
 ## Getting Started
@@ -49,7 +56,6 @@ yarn dev
 ```sh
 PORT: 3001.
 ```
-
 
 <!-- CONTACT -->
 
