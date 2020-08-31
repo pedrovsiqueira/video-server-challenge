@@ -14,7 +14,7 @@ The challenge was to design a server that handles HTTP requests for user managem
 
 <!-- USAGE -->
 
-## USAGE
+## Usage
 
 https://documenter.getpostman.com/view/11826298/TVCcWoYY
 
