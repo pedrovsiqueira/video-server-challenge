@@ -5,7 +5,7 @@ export interface IRoom extends Document {
   name: string;
   guid?: string;
   hostUser: string;
-  participants?: string[];
+  participants: string[];
   capacity?: number;
 }
 
