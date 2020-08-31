@@ -90,7 +90,7 @@ export default class UserController {
       }
 
       return response.status(200).json({
-        token: genToken(user),
+        accessToken: genToken(user),
       });
     } catch (error) {
       return response.status(500).json({ message: 'Failed to login' });
